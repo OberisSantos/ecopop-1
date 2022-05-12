@@ -10,7 +10,6 @@ class Connection {
     if (_db == null) {
       final path = join(await getDatabasesPath(), 'ecopop');
       //deleteDatabase(path);
-      print('pegou o banco1');
       _db = await openDatabase(
         path,
         version: 1,

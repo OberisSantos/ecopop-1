@@ -97,10 +97,24 @@ class GrupoPesquisaDao {
     _db = await Connection.getDatabase();
     final resultado = await _db!.update(_tabela, _toMap(grupo),
         where: '$_id = ?', whereArgs: [grupo.id]);
+    updateFB(grupo);
     return resultado;
   }
 
   //#############TABLE FIREBASE
+
+  Future<int> updateFB(GrupoPesquisa grupo) async {
+    final postData = {
+      'id': grupo.id,
+      'nomegrupo': grupo.nomegrupo,
+    };
+    final Map<String, Map> updates = {};
+    final uuid = grupo.uuid;
+    updates['/grupopesquisa/$uuid'] = postData;
+    ref.update(updates);
+    return 0;
+  }
+
   Future<int> saveFB(GrupoPesquisa grupo, int id) async {
     final postData = {
       'id': id,
@@ -112,6 +126,22 @@ class GrupoPesquisaDao {
     final newPostKey = ref.child('grupopesquisa').push().key;
     updates['/grupopesquisa/$newPostKey'] = postData;
     ref.update(updates);
+
+    //atualizar uuid no Objeto
+    GrupoPesquisa grupoFB = GrupoPesquisa(
+      newPostKey,
+      0,
+      grupo.nomegrupo,
+    );
+
+    //atualizar uuid no banco local
+    _db = await Connection.getDatabase();
+    await _db!.update(
+      _tabela,
+      _toMap(grupoFB),
+      where: '$_id = ?',
+      whereArgs: [id],
+    );
 
     return 0;
   }
