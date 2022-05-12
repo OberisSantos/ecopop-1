@@ -2,6 +2,7 @@ import 'package:eco_pop/database/connection.dart';
 import 'package:eco_pop/grupo-pesquisa/grupo.dart';
 import 'package:eco_pop/utils/network_status_service.dart';
 import 'package:firebase_database/firebase_database.dart';
+import 'package:hasura_connect/hasura_connect.dart';
 
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
@@ -36,7 +37,7 @@ class GrupoPesquisaDao {
       '$_uuid TEXT'
       ')';
 
-  List<GrupoPesquisa> _grupoPesquisa = [];
+  List<GrupoPesquisa> _gruposPesquisa = [];
   //salvar grupo pesquisa
   Future<int> save(GrupoPesquisa grupo) async {
     //final Database db = await getDatabase();
@@ -58,10 +59,19 @@ class GrupoPesquisaDao {
 
   //gegar todos os grupos
   Future<List<GrupoPesquisa>> findAll() async {
-    //TODO: atualizar tabela local; *** se houver linha local a mais ?????
-    //deleteAll(); //Em tabelas específicas deletar somente o que pertence ao usuário
-
+    bool online = await hasNetwork();
     _db = await Connection.getDatabase();
+    if (online) {
+      //TODO: atualizar tabela local; *** se houver linha local a mais ?????
+      deleteAll(); //Em tabelas específicas deletar somente o que pertence ao usuário
+      _gruposPesquisa = [];
+      await findAllFB();
+      for (GrupoPesquisa grupo in _gruposPesquisa) {
+        Map<String, dynamic> grupoMap = _toMap(grupo);
+        _db!.insert(_tabela, grupoMap);
+      }
+    }
+
     final List<Map<String, dynamic>> resultado = await _db!.query(_tabela);
     List<GrupoPesquisa> grupos = _toList(resultado);
     return grupos;
@@ -78,6 +88,12 @@ class GrupoPesquisaDao {
       grupos.add(grupo);
     }
     return grupos;
+  }
+
+  //deleteall
+  void deleteAll() async {
+    _db = await Connection.getDatabase();
+    await _db!.delete(_tabela);
   }
 
   //delete
@@ -102,6 +118,25 @@ class GrupoPesquisaDao {
   }
 
   //#############TABLE FIREBASE
+
+  Future<List<GrupoPesquisa>> findAllFB() async {
+    final snapshot = (await ref.child('grupopesquisa').get());
+    final List<GrupoPesquisa> gruposPesquisa = [];
+    //var i = 0;
+    for (int i = 0; i < snapshot.children.length; i++) {
+      DataSnapshot data = snapshot.children.elementAt(i);
+      final GrupoPesquisa grupo = GrupoPesquisa(
+        data.key,
+        int.parse(data.child('id').value.toString()),
+        data.child('nomegrupo').value.toString(),
+      );
+      gruposPesquisa.add(grupo);
+      //i += 1;
+    }
+    _gruposPesquisa = gruposPesquisa;
+
+    return gruposPesquisa;
+  }
 
   Future<int> updateFB(GrupoPesquisa grupo) async {
     final postData = {
@@ -129,7 +164,7 @@ class GrupoPesquisaDao {
 
     //atualizar uuid no Objeto
     GrupoPesquisa grupoFB = GrupoPesquisa(
-      newPostKey,
+      newPostKey, //uuid
       0,
       grupo.nomegrupo,
     );
