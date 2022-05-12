@@ -65,19 +65,19 @@ class InstituicaoDao {
   //gegar todas as instituições
   Future<List<Instituicao>> findAll() async {
     bool online = await hasNetwork();
-    if (online){
+    if (online) {
       //TODO: atualizar tabela local; *** se houver linha local a mais ?????
       deleteAll(); //Em tabelas específicas deletar somente o que pertence ao usuário
       _instituicoes = [];
       await findAllFB();
       _db = await Connection.getDatabase();
-      for(Instituicao instituicao in _instituicoes){
-        print(instituicao);
+      for (Instituicao instituicao in _instituicoes) {
         Map<String, dynamic> instiMap = _toMap(instituicao);
         _db!.insert(_tabela, instiMap);
       }
     }
     //final Database db = await getDatabase();
+
     _db = await Connection.getDatabase();
     final List<Map<String, dynamic>> resultado = await _db!.query(_tabela);
     List<Instituicao> instituicoes = _toList(resultado);
@@ -88,7 +88,10 @@ class InstituicaoDao {
     final List<Instituicao> instituicoes = [];
     for (Map<String, dynamic> row in resultado) {
       final Instituicao instituicao = Instituicao(
-          id: row[_id], uuid: row[_uuid], descricao: row[_descricao], sigla: row[_sigla]);
+          id: row[_id],
+          uuid: row[_uuid],
+          descricao: row[_descricao],
+          sigla: row[_sigla]);
       instituicoes.add(instituicao);
     }
     return instituicoes;
@@ -122,27 +125,24 @@ class InstituicaoDao {
     return resultado;
   }
 
-
 //##########FIREBASE
   Future<List<Instituicao>> findAllFB() async {
     final snapshot = (await ref.child('instituicao').get());
     final List<Instituicao> instituicoes = [];
-    var i=0;
-    while ( i < snapshot.children.length ){
+    var i = 0;
+    while (i < snapshot.children.length) {
       DataSnapshot data = snapshot.children.elementAt(i);
       final Instituicao instituicao = Instituicao(
           uuid: data.key,
           id: int.parse(data.child("id").value.toString()),
           descricao: data.child("descricao").value.toString(),
-          sigla: data.child("sigla").value.toString()
-      );
+          sigla: data.child("sigla").value.toString());
       instituicoes.add(instituicao);
-      i = i +1;
+      i = i + 1;
     }
     _instituicoes = instituicoes;
     return instituicoes;
   }
-
 
   Future<int> deleteFB(Instituicao instituicao) async {
     final a = instituicao.uuid;
@@ -171,18 +171,16 @@ class InstituicaoDao {
     };
     //salva no FB
     final Map<String, Map> updates = {};
-    final newPostKey =
-        ref.child('instituicao').push().key;
+    final newPostKey = ref.child('instituicao').push().key;
     updates['/instituicao/$newPostKey'] = postData;
     ref.update(updates);
 
     //atualiza uuid no Objeto
     Instituicao instituicaoFB = Instituicao(
-        descricao:instituicao.descricao,
+        descricao: instituicao.descricao,
         uuid: newPostKey,
         id: 0,
-        sigla: instituicao.sigla
-    );
+        sigla: instituicao.sigla);
     //atualiza uuid no banco local
     _db = await Connection.getDatabase();
     await _db!.update(_tabela, _toMap(instituicaoFB),

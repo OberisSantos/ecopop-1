@@ -20,7 +20,6 @@ GoogleSignIn _googleSignIn = GoogleSignIn(
 
 bool _online = true;
 
-
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
 
@@ -63,7 +62,7 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
     final Map<String, dynamic> data =
-    json.decode(response.body) as Map<String, dynamic>;
+        json.decode(response.body) as Map<String, dynamic>;
     final String? namedContact = _pickFirstNamedContact(data);
     setState(() {
       if (namedContact != null) {
@@ -77,12 +76,12 @@ class _LoginPageState extends State<LoginPage> {
   String? _pickFirstNamedContact(Map<String, dynamic> data) {
     final List<dynamic>? connections = data['connections'] as List<dynamic>?;
     final Map<String, dynamic>? contact = connections?.firstWhere(
-          (dynamic contact) => contact['names'] != null,
+      (dynamic contact) => contact['names'] != null,
       orElse: () => null,
     ) as Map<String, dynamic>?;
     if (contact != null) {
       final Map<String, dynamic>? name = contact['names'].firstWhere(
-            (dynamic name) => name['displayName'] != null,
+        (dynamic name) => name['displayName'] != null,
         orElse: () => null,
       ) as Map<String, dynamic>?;
       if (name != null) {
@@ -118,184 +117,157 @@ class _LoginPageState extends State<LoginPage> {
   Widget _buildBody() {
     final GoogleSignInAccount? user = _currentUser;
     if (user != null) {
-      return Column(
-          children: [
-            SizedBox(
-              width: MediaQuery
-                  .of(context)
-                  .size
-                  .width,
-              height: MediaQuery
-                  .of(context)
-                  .size
-                  .height * 0.16,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        SizedBox(
-                            width: MediaQuery
-                                .of(context)
-                                .size
-                                .width * 0.7,
-                            height: MediaQuery
-                                .of(context)
-                                .size
-                                .height * 0.13,
-                            child: ListTile(
-                              leading: GoogleUserCircleAvatar(
-                                identity: user,
-                              ),
-                              title: Text(user.displayName ?? ''),
-                              subtitle: Text(user.email),
-                            ),
-
+      return Column(children: [
+        SizedBox(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height * 0.16,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width * 0.7,
+                      height: MediaQuery.of(context).size.height * 0.13,
+                      child: ListTile(
+                        leading: GoogleUserCircleAvatar(
+                          identity: user,
                         ),
-                        FloatingActionButton.extended(
-                          onPressed: _handleSignOut,
-                          label: const Text(""),
-                          backgroundColor: Colors.green,
-                          icon: Icon(Icons.logout),
-                        ),
-                      ],
+                        title: Text(user.displayName ?? ''),
+                        subtitle: Text(user.email),
+                      ),
                     ),
-                  ),
-                ],
+                    FloatingActionButton.extended(
+                      onPressed: _handleSignOut,
+                      label: const Text(""),
+                      backgroundColor: Colors.green,
+                      icon: Icon(Icons.logout),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Padding(padding: EdgeInsets.only(bottom: 8.0)),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.9,
+              height: 60,
+              child: FloatingActionButton.extended(
+                onPressed: () {
+                  final Future future = Navigator.push(context,
+                      MaterialPageRoute(builder: (context) {
+                    return MeusDados();
+                  }));
+                  future.then((usuario) {
+                    //teste
+                  });
+                },
+                label: const Text("Meus Dados"),
+                backgroundColor: Colors.green,
+                icon: Icon(Icons.verified_user),
               ),
             ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Padding(padding: EdgeInsets.only(bottom: 8.0)),
-                SizedBox(
-                  width: MediaQuery
-                      .of(context)
-                      .size
-                      .width * 0.9,
-                  height: 60,
-                  child: FloatingActionButton.extended(
-                    onPressed: () {
-                      final Future future =
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return MeusDados();
-                      }));
-                      future.then((usuario) {
-                        //teste
-                      });
-                    },
-                    label: const Text("Meus Dados"),
-                    backgroundColor: Colors.green,
-                    icon: Icon(Icons.verified_user),
-                  ),
-                ),
-                Padding(padding: EdgeInsets.only(bottom: 8.0)),
-                SizedBox(
-                  width: MediaQuery
-                      .of(context)
-                      .size
-                      .width * 0.9,
-                  height: 60,
-                  child: FloatingActionButton.extended(
-                    onPressed:() {
-                      final Future future =
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return VerPop();
-                      }));
-                      future.then((grupo) {
-                      //teste
-                      });
-                      },
-                    label: const Text("Projetos"),
-                    backgroundColor: Colors.green,
-                    icon: Icon(Icons.document_scanner),
-                  ),
-                ),
-                Padding(padding: EdgeInsets.only(bottom: 8.0)),
-                SizedBox(
-                  width: MediaQuery
-                      .of(context)
-                      .size
-                      .width * 0.9,
-                  height: 60,
-                  child: FloatingActionButton.extended(
-                    onPressed: () {
-                      final Future future =
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return ListarGruposPesquisa();
-                      }));
-                      future.then((grupo) {
-                        //teste
-                      });
-                    },
-                    label: const Text("Grupo Pesquisa"),
-                    backgroundColor: Colors.green,
-                    icon: Icon(Icons.people),
-                  ),
-                ),
-                Padding(padding: EdgeInsets.only(bottom: 8.0)),
-                SizedBox(
-                  width: MediaQuery
-                      .of(context)
-                      .size
-                      .width * 0.9,
-                  height: 60,
-                  child: FloatingActionButton.extended(
-                    onPressed: () {
-                      final Future future =
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
-                        return ListarInstituicao();
-                      }));
-                      future.then((instituicao) {});
-                    },
-                    label: const Text("Instituição"),
-                    backgroundColor: Colors.green,
-                    icon: Icon(Icons.account_balance),
-                  ),
-                ),
-
-              ],
-            )
-          ]);
+            Padding(padding: EdgeInsets.only(bottom: 8.0)),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.9,
+              height: 60,
+              child: FloatingActionButton.extended(
+                onPressed: () {
+                  final Future future = Navigator.push(context,
+                      MaterialPageRoute(builder: (context) {
+                    return VerPop();
+                  }));
+                  future.then((grupo) {
+                    //teste
+                  });
+                },
+                label: const Text("Projetos"),
+                backgroundColor: Colors.green,
+                icon: Icon(Icons.document_scanner),
+              ),
+            ),
+            Padding(padding: EdgeInsets.only(bottom: 8.0)),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.9,
+              height: 60,
+              child: FloatingActionButton.extended(
+                onPressed: () {
+                  final Future future = Navigator.push(context,
+                      MaterialPageRoute(builder: (context) {
+                    return ListarGruposPesquisa();
+                  }));
+                  future.then((grupo) {
+                    //teste
+                  });
+                },
+                label: const Text("Grupo Pesquisa"),
+                backgroundColor: Colors.green,
+                icon: Icon(Icons.people),
+              ),
+            ),
+            Padding(padding: EdgeInsets.only(bottom: 8.0)),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.9,
+              height: 60,
+              child: FloatingActionButton.extended(
+                onPressed: () {
+                  final Future future = Navigator.push(context,
+                      MaterialPageRoute(builder: (context) {
+                    return ListarInstituicao();
+                  }));
+                  future.then((instituicao) {});
+                },
+                label: const Text("Instituição"),
+                backgroundColor: Colors.green,
+                icon: Icon(Icons.account_balance),
+              ),
+            ),
+          ],
+        )
+      ]);
     } else {
       return Center(
           child: SingleChildScrollView(
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Container(
+        child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                alignment: Alignment.center,
+                width: 200.0,
+                height: 200.0,
+                decoration: const BoxDecoration(
+                  shape: BoxShape.circle,
+                  image: DecorationImage(
                     alignment: Alignment.center,
-                    width: 200.0,
-                    height: 200.0,
-                    decoration: const BoxDecoration(
-                      shape: BoxShape.circle,
-                      image: DecorationImage(
-                        alignment: Alignment.center,
-                        image: AssetImage('assets/ECOPoP.png'),
-                      ), //AssetImage("assets/Serenity.png"),
-                    ),
+                    image: AssetImage('assets/ECOPoP.png'),
+                  ), //AssetImage("assets/Serenity.png"),
+                ),
+              ),
+              SizedBox(
+                height: 35.0,
+              ),
+              FloatingActionButton.extended(
+                onPressed: _handleSignIn,
+                label: Text(
+                  "Login",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
                   ),
-                  SizedBox(
-                    height: 35.0,
-                  ),
-                  FloatingActionButton.extended(
-                    onPressed: _handleSignIn,
-                    label: Text(
-                      "Login",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    backgroundColor: Colors.green,
-                  ),
-                ]),
-          )); // This trailing comma makes auto-formatting nicer for build methods.
+                ),
+                backgroundColor: Colors.green,
+              ),
+            ]),
+      )); // This trailing comma makes auto-formatting nicer for build methods.
     }
   }
 }

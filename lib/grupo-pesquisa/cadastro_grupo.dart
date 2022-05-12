@@ -27,13 +27,13 @@ class FormularioGrupoPesquisaState extends State<FormularioGrupoPesquisa> {
   @override
   Widget build(BuildContext context) {
     //final GrupoPesquisa = ModalRoute.of(context).settings.arguments;
-    //final GrupoPesquisa? grupoUpdate = widget.grupo;
-    final GrupoPesquisa? grupoUpdate =
+    //final GrupoPesquisa? grupoUp = widget.grupo;
+    final GrupoPesquisa? grupoUp =
         ModalRoute.of(context)?.settings.arguments as GrupoPesquisa?;
     //  ModalRoute.of(context)?.settings.arguments as GrupoPesquisa?;
 
-    if (grupoUpdate != null) {
-      _controladorCampoNome.text = grupoUpdate.nomegrupo;
+    if (grupoUp != null) {
+      _controladorCampoNome.text = grupoUp.nomegrupo;
     }
 
     return Scaffold(
@@ -73,12 +73,14 @@ class FormularioGrupoPesquisaState extends State<FormularioGrupoPesquisa> {
                     onPressed: () {
                       //_criaGrupoPesquisa(context);
                       if (_formKey.currentState!.validate()) {
-                        if (grupoUpdate != null) {
+                        if (grupoUp != null) {
                           final String nomegrupo = _controladorCampoNome.text;
-                          final int id = grupoUpdate.id;
+                          final int id = grupoUp.id;
+                          final String? uuid =
+                              grupoUp.uuid == null ? null : grupoUp.uuid;
 
                           final GrupoPesquisa upGrupoPesquisa =
-                              GrupoPesquisa(id, nomegrupo);
+                              GrupoPesquisa(uuid, id, nomegrupo);
                           //update
                           _grupoDao
                               .update(upGrupoPesquisa)
@@ -87,7 +89,7 @@ class FormularioGrupoPesquisaState extends State<FormularioGrupoPesquisa> {
                           final String nomegrupo = _controladorCampoNome.text;
 
                           final GrupoPesquisa newGrupoPesquisa =
-                              GrupoPesquisa(0, nomegrupo);
+                              GrupoPesquisa(null, 0, nomegrupo);
                           //Salvar
                           _grupoDao
                               .save(newGrupoPesquisa)
