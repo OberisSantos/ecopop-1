@@ -97,13 +97,13 @@ class GrupoPesquisaDao {
   }
 
   //delete
-  Future<int> delete(int id) async {
+  Future<int> delete(GrupoPesquisa grupoPesquisa) async {
     //final db = await getDatabase();
     _db = await Connection.getDatabase();
     int resultado = await _db!.delete(_tabela, //nome da tabela
         where: "$_id = ?",
-        whereArgs: [id]);
-
+        whereArgs: [grupoPesquisa.id]);
+    deleteFB(grupoPesquisa);
     return resultado;
   }
 
@@ -136,6 +136,12 @@ class GrupoPesquisaDao {
     _gruposPesquisa = gruposPesquisa;
 
     return gruposPesquisa;
+  }
+
+  Future<int> deleteFB(GrupoPesquisa grupoPesquisa) async {
+    final g = grupoPesquisa.uuid;
+    ref.child('grupopesquisa').child(g!).remove();
+    return 0;
   }
 
   Future<int> updateFB(GrupoPesquisa grupo) async {

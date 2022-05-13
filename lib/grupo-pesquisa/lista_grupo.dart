@@ -79,7 +79,7 @@ class ListarGruposPesquisaState extends State<ListarGruposPesquisa> {
                               IconButton(
                                 onPressed: () {
                                   setState(() {
-                                    _gruposDao.delete(grupo.id);
+                                    _gruposDao.delete(grupo);
                                   });
                                 },
                                 icon: Icon(Icons.delete),
