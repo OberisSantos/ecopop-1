@@ -1,6 +1,7 @@
 import 'package:eco_pop/grupo-pesquisa/lista_grupo.dart';
 import 'package:eco_pop/instituicao/lista_instituicao.dart';
 import 'package:eco_pop/main.dart';
+import 'package:eco_pop/pop/lista_pop.dart';
 import 'package:eco_pop/pop/pop_view.dart';
 import 'package:eco_pop/user/usuario.dart';
 import 'package:eco_pop/user/usuario_dao.dart';
@@ -183,9 +184,9 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () {
                   final Future future = Navigator.push(context,
                       MaterialPageRoute(builder: (context) {
-                    return VerPop();
+                    return ListarPop();
                   }));
-                  future.then((grupo) {
+                  future.then((pop) {
                     //teste
                   });
                 },

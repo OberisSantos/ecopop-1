@@ -1,5 +1,6 @@
 import 'package:eco_pop/grupo-pesquisa/grupo_dao.dart';
 import 'package:eco_pop/instituicao/instituicao_dao.dart';
+import 'package:eco_pop/pop/pop_dao.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -13,16 +14,26 @@ class Connection {
       _db = await openDatabase(
         path,
         version: 1,
-        onCreate: (db, version) {
-          return {
-            db.execute(GrupoPesquisaDao.tableSql),
-            db.execute(InstituicaoDao.tableSql),
-          };
-        },
+        onCreate: (db, version) => {_createTable(db)},
         onDowngrade: onDatabaseDowngradeDelete,
       );
     }
 
     return _db!;
   }
+
+  /*return {
+            _createTable(db);
+            /*db.execute(GrupoPesquisaDao.tableSql),
+            db.execute(InstituicaoDao.tableSql),
+            db.execute(PopDao.tableSql),*/
+          };*/
+
+}
+
+_createTable(Database db) {
+  db.execute(GrupoPesquisaDao.tableSql);
+  db.execute(InstituicaoDao.tableSql);
+  db.execute(PopDao.tableSql);
+  db.execute(PopDao.tableDadosSql);
 }

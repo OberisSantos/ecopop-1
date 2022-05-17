@@ -2,14 +2,22 @@ import 'dart:ffi';
 
 class Pop {
   final int id;
-  final String descricao;
+  final String? uuid;
+  final String? descricao;
   final String? conceito;
   final String? fonte;
   final String? formula;
   final String? experimento;
   final bool padrao;
 
-  Pop(this.id, this.descricao, {this.conceito, this.fonte, this.formula, this.experimento, this.padrao = false});
+  Pop(this.id,
+      {this.uuid,
+      this.descricao,
+      this.conceito,
+      this.fonte,
+      this.formula,
+      this.experimento,
+      this.padrao = false});
 
   @override
   String toString() {
@@ -18,11 +26,11 @@ class Pop {
 }
 
 class DadosPop {
-  final int id;
-  final int idPop;
-  final Double quantidade;
-  final Double tempo;
+  final int? id;
+  final String? uuid;
+  final int? idPop;
+  final Double? quantidade;
+  final Double? tempo;
 
-  DadosPop(this.id, this.idPop, this.quantidade, this.tempo);
-
+  DadosPop(this.id, {this.uuid, this.idPop, this.quantidade, this.tempo});
 }

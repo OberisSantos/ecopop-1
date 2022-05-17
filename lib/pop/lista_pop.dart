@@ -1,30 +1,28 @@
-import 'package:eco_pop/grupo-pesquisa/cadastro_grupo.dart';
-import 'package:eco_pop/grupo-pesquisa/grupo.dart';
-import 'package:eco_pop/grupo-pesquisa/grupo_dao.dart';
+import 'package:eco_pop/pop/pop.dart';
+import 'package:eco_pop/pop/pop_dao.dart';
 import 'package:flutter/material.dart';
 
-class ListarGruposPesquisa extends StatefulWidget {
+class ListarPop extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
-    return ListarGruposPesquisaState();
+    return ListarPopState();
   }
 }
 
-class ListarGruposPesquisaState extends State<ListarGruposPesquisa> {
-  final GrupoPesquisaDao _gruposDao = GrupoPesquisaDao();
+class ListarPopState extends State<ListarPop> {
+  final PopDao _popDao = PopDao();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text('Grupo de pesquisa'),
+        title: Text('População'),
       ),
-      body: FutureBuilder<List<GrupoPesquisa>>(
+      body: FutureBuilder<List<Pop>>(
         initialData: [],
         //future: Future.delayed(Duration(seconds: 5))
-        //.then((value) => _gruposDao.findAll()),
-        future: _gruposDao.findAll(),
+        future: _popDao.findAll(),
         builder: (context, snapshot) {
           switch (snapshot.connectionState) {
             case ConnectionState.none:
@@ -44,24 +42,23 @@ class ListarGruposPesquisaState extends State<ListarGruposPesquisa> {
             case ConnectionState.active:
               break;
             case ConnectionState.done:
-              final List<GrupoPesquisa> grupos = snapshot.data ?? [];
+              final List<Pop> pops = snapshot.data ?? [];
               return ListView.builder(
                 itemBuilder: (context, index) {
-                  final GrupoPesquisa grupo = grupos[index];
-                  //return ItensGruposPesquisa(grupo);
+                  final Pop pop = pops[index];
                   return MaterialButton(
                     onPressed: () {},
                     child: Card(
                       child: ListTile(
-                        title: Text(grupo.nomegrupo),
-                        //subtitle: Text(_grupo_pesquisa.id.toString()),
+                        title: Text(pop.descricao.toString()),
+                        subtitle: Text(pop.conceito.toString()),
                         trailing: Container(
                           width: 100,
                           child: Row(
                             children: <Widget>[
                               IconButton(
                                   onPressed: () {
-                                    Navigator.of(context)
+                                    /*Navigator.of(context)
                                         .push(
                                           MaterialPageRoute(
                                             builder: (context) =>
@@ -72,15 +69,17 @@ class ListarGruposPesquisaState extends State<ListarGruposPesquisa> {
                                         )
                                         .then(
                                           (value) => setState(() {}),
-                                        );
+                                        );*/
                                   },
                                   icon: Icon(Icons.edit),
                                   color: Colors.orange[300]),
                               IconButton(
                                 onPressed: () {
+                                  /*
                                   setState(() {
-                                    _gruposDao.delete(grupo.id);
+                                    _gruposDao.delete(grupo);
                                   });
+                                  */
                                 },
                                 icon: Icon(Icons.delete),
                                 color: Colors.red[900],
@@ -92,7 +91,7 @@ class ListarGruposPesquisaState extends State<ListarGruposPesquisa> {
                     ),
                   );
                 },
-                itemCount: grupos.length,
+                itemCount: pops.length,
               );
               break;
           }
@@ -101,16 +100,17 @@ class ListarGruposPesquisaState extends State<ListarGruposPesquisa> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.of(context)
+          /*Navigator.of(context)
               .push(
                 MaterialPageRoute(
-                  builder: (context) => FormularioGrupoPesquisa(),
+                  builder: (context) => 'FormularioGrupoPesquisa'(),
                   settings: RouteSettings(arguments: null),
                 ),
               )
               .then(
                 (value) => setState(() {}),
               );
+              */
         },
         child: Icon(Icons.add),
       ),

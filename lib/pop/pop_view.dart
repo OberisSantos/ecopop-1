@@ -18,20 +18,15 @@ class VerPopState extends State<VerPop> {
 
   late final LineChartData data;
 
-
   @override
   void initState() {
     super.initState();
     data = LineChartData(datasets: [
-      Dataset(
-          label: 'População',
-          dataPoints: _createDataPoints()
-      ),
-    ]
-    );// create a data model
+      Dataset(label: 'População', dataPoints: _createDataPoints()),
+    ]); // create a data model
   }
 
-  List<DataPoint> _createDataPoints()  {
+  List<DataPoint> _createDataPoints() {
     //final snapshot = await _popDao.findDadosFB('https://ecop-25-d01d5-default-rtdb.firebaseio.com/projetos_padrao/EXPO/dados');
     List<DataPoint> dataPoints = [];
     dataPoints.add(DataPoint(x: 0.0, y: 0.0));
@@ -82,18 +77,19 @@ class VerPopState extends State<VerPop> {
                 children: [
                   MaterialButton(
                     onPressed: () {},
-                      child: Card(
-                        child: ListTile(
-                          title: Text(pop!=null?pop.descricao:""),
-                          //subtitle: Text(pop!=null?pop.experimento!=null?pop.experimento:""):""),
-                        ),
+                    child: Card(
+                      child: ListTile(
+                        title:
+                            Text(pop != null ? pop.descricao.toString() : ""),
+                        //subtitle: Text(pop!=null?pop.experimento!=null?pop.experimento:""):""),
                       ),
+                    ),
                   ),
                   Padding(
                     padding: const EdgeInsets.only(
                         right: 18.0, left: 12.0, top: 24, bottom: 12),
                     child: LineChart(
-                      // chart is styled
+                        // chart is styled
                         style: LineChartStyle.fromTheme(context),
                         seriesHeight: 300,
                         // chart has data
@@ -101,7 +97,6 @@ class VerPopState extends State<VerPop> {
                   ),
                 ],
               );
-
           }
           return Text('Unknown error');
         },
@@ -111,7 +106,8 @@ class VerPopState extends State<VerPop> {
           Navigator.of(context)
               .push(
                 MaterialPageRoute(
-                  builder: (context) => FormularioGrupoPesquisa(), //TODO: FormularioPop()
+                  builder: (context) =>
+                      FormularioGrupoPesquisa(), //TODO: FormularioPop()
                   settings: RouteSettings(arguments: null),
                 ),
               )
