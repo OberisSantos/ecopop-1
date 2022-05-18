@@ -28,9 +28,14 @@ class Pop {
 class DadosPop {
   final int? id;
   final String? uuid;
-  final int? idPop;
+  final Pop? idPop;
   final Double? quantidade;
   final Double? tempo;
 
   DadosPop(this.id, {this.uuid, this.idPop, this.quantidade, this.tempo});
+
+  @override
+  String toString() {
+    return 'Dados{id: $id, Quantidade: $quantidade, Tempo: $tempo}';
+  }
 }

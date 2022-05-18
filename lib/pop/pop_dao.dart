@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:eco_pop/database/connection.dart';
 import 'package:eco_pop/pop/pop.dart';
 import 'package:eco_pop/utils/network_status_service.dart';
@@ -7,20 +9,6 @@ import 'package:path/path.dart';
 
 FirebaseDatabase database = FirebaseDatabase.instance;
 DatabaseReference ref = FirebaseDatabase.instance.ref();
-/*
-Future<Database> getDatabase() async {
-  final String path = join(await getDatabasesPath(), 'ecopop');
-  return openDatabase(
-    path,
-    onCreate: (db, version) {
-      db.execute(PopDao.tableSql);
-      db.execute(PopDao.tableDadosSql);
-    },
-    version: 1,
-    //limpar o banco de dados - primeiro precisa alterar a versão
-    //onDowngrade: onDatabaseDowngradeDelete,
-  );
-}*/
 
 class PopDao {
   Database? _db;
@@ -58,7 +46,7 @@ class PopDao {
       '$_quantidade FLOAT,'
       '$_tempo FLOAT,'
       '$_uuidDados TEXT,'
-      'FOREING KEY ($_idPop) REFERENCES $_tabela($_id) ON DELETE RESTRICT ON UPDATE CASCADE'
+      'FOREIGN KEY ($_idPop) REFERENCES $_tabela($_id) ON DELETE RESTRICT ON UPDATE CASCADE'
       ')';
 
   List<Pop> _pops = [];
@@ -69,8 +57,23 @@ class PopDao {
 
     Map<String, dynamic> popMap = _toMap(pop);
     final insertId = await _db!.insert(_tabela, popMap);
+
     //inserir FB
-    return 0;
+    return insertId;
+  }
+
+  //Salvar dados da população
+  Future<int> saveDados(int id, DadosPop dadosPop) async {
+    _db = await Connection.getDatabase();
+    final Map<String, dynamic> dadosMap = Map();
+    dadosMap[_quantidade] = dadosPop.quantidade;
+    dadosMap[_tempo] = dadosPop.tempo;
+    dadosMap[_uuidDados] = dadosPop.uuid;
+    dadosMap[_idPop] = id;
+
+    final iddados = await _db!.insert(_tabelaDados, dadosMap);
+
+    return iddados; //retornar o id
   }
 
   Map<String, dynamic> _toMap(Pop pop) {
@@ -91,17 +94,24 @@ class PopDao {
     bool _online = await hasNetwork();
     //verificar se está online
     if (_online) {
-      //mudar
-      //deleteAll(); //verificar a logica depois
+      deleteAll(); //verificar a logica depois
       _pops = [];
       await findAllFB(_tabela);
-      /*for (Pop pop in _pops) {
-        Map<String, dynamic> popMap = _toMap(pop);
-        _db!.insert(_tabela, popMap);
-      }*/
+
+      for (Pop pop in _pops) {
+        final DadosPop dados =
+            DadosPop(0, uuid: null, idPop: pop, quantidade: null, tempo: null);
+        final int idPop = await save(pop);
+        await saveDados(idPop, dados);
+      }
     }
 
-    final List<Map<String, dynamic>> resultado = await _db!.query(_tabela);
+    const String constulta = """
+          SELECT  p.id, p.uuid, p.descricao, p.conceito, p.formula, p.experimento, p.padrao, 
+          dp.id as id_dados, dp.id_pop, dp.quantidade, dp.tempo, dp.uuid as uuid_dados
+          FROM $_tabela as p, $_tabelaDados as dp 
+          WHERE  p.id = dp.id_pop""";
+    final List<Map<String, dynamic>> resultado = await _db!.rawQuery(constulta);
 
     List<Pop> pops = _toList(resultado);
 
@@ -119,16 +129,16 @@ class PopDao {
         fonte: row[_fonte],
         formula: row[_formula],
         experimento: row[_experimento],
-        padrao: false, //verificar o padrao
+        padrao: row[_padrao] == 0 ? false : true, //verificar o padrao
       );
       pops.add(pop);
     }
-    print('aqui');
     return pops;
   }
 
   Future deleteAll() async {
     _db = await Connection.getDatabase();
+    await _db!.delete(_tabelaDados);
     await _db!.delete(_tabela);
   }
 
@@ -155,7 +165,7 @@ class PopDao {
   //##########FIREBASE
   Future<List<Pop>> findAllFB(String url) async {
     //Exemplo: url = 'projetos_padrao/EXPO'
-    url = 'projetos_padrao';
+    url = 'projetos_padrao'; //remover
     final snapshot = (await ref.child(url).get());
     final List<Pop> pops = [];
     var i = 0;
@@ -203,7 +213,7 @@ class PopDao {
         experimento: data.child("experimento").value.toString(),
         fonte: data.child("fonte").value.toString(),
         formula: data.child("formula").value.toString(),
-        padrao: data.child("padrao").value == 'true');
+        padrao: data.child("padrao").value == true);
 
     return pop;
   }

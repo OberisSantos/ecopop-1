@@ -96,6 +96,9 @@ class _LoginPageState extends State<LoginPage> {
     _online = await hasNetwork();
     try {
       var user1 = await _googleSignIn.signIn();
+      final UsuarioDao uDao = UsuarioDao();
+      final Usuario usuario = Usuario(0, user1!.email, user1.displayName);
+      print('usario $user1');
     } catch (error) {
       print(error);
     }

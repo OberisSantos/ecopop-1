@@ -15,7 +15,7 @@ class Connection {
         path,
         version: 1,
         onCreate: (db, version) => {_createTable(db)},
-        onDowngrade: onDatabaseDowngradeDelete,
+        //onDowngrade: onDatabaseDowngradeDelete,
       );
     }
 
