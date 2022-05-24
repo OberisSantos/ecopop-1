@@ -51,7 +51,7 @@ class PopDao {
 
   List<Pop> _pops = [];
   //salvar
-  Future<int> save(Pop pop) async {
+  Future<int> savePop(Pop pop) async {
     //final Database db = await getDatabase();
     _db = await Connection.getDatabase();
 
@@ -69,10 +69,10 @@ class PopDao {
     dadosMap[_quantidade] = dadosPop.quantidade;
     dadosMap[_tempo] = dadosPop.tempo;
     dadosMap[_uuidDados] = dadosPop.uuid;
-    dadosMap[_idPop] = id;
+    dadosMap[_idPop] = dadosPop.idPop!.id;
 
     final iddados = await _db!.insert(_tabelaDados, dadosMap);
-
+    print(iddados);
     return iddados; //retornar o id
   }
 
@@ -88,33 +88,62 @@ class PopDao {
     return popMap;
   }
 
+  Future<Pop?> getPopId(int id) async {
+    _db = await Connection.getDatabase();
+
+    final List<Map<String, dynamic>> pop =
+        await _db!.query(_tabela, where: 'id = ?', whereArgs: [id]);
+    //print(pop.descricao);
+    //final List<Map<String, dynamic>> resultado = await _db!.query(_tabela);
+    //print(resultado);
+    Pop? _valor;
+    for (Map<String, dynamic> row in pop) {
+      _valor = Pop(
+        row[_id],
+        uuid: row[_uuid],
+        descricao: row[_descricao],
+        conceito: row[_conceito],
+        fonte: row[_fonte],
+        formula: row[_formula],
+        experimento: row[_experimento],
+        padrao: row[_padrao] == 0 ? false : true, //verificar o padrao
+      );
+    }
+    return _valor;
+  }
+
   //gegar todos
   Future<List<Pop>> findAll() async {
     _db = await Connection.getDatabase();
     bool _online = await hasNetwork();
     //verificar se está online
-    if (_online) {
+
+    if (_online == false) {
       deleteAll(); //verificar a logica depois
-      _pops = [];
-      await findAllFB(_tabela);
+      _pops = await findAllFB(_tabela);
 
       for (Pop pop in _pops) {
-        final DadosPop dados =
-            DadosPop(0, uuid: null, idPop: pop, quantidade: null, tempo: null);
-        final int idPop = await save(pop);
-        await saveDados(idPop, dados);
+        /*final DadosPop dados =
+            DadosPop(0, uuid: null, idPop: pop, quantidade: null, tempo: null);*/
+        Map<String, dynamic> popMap = _toMap(pop);
+
+        await _db!.insert(_tabela, popMap);
+        //await saveDados(idPop, dados);
       }
     }
-
+    /*
     const String constulta = """
           SELECT  p.id, p.uuid, p.descricao, p.conceito, p.formula, p.experimento, p.padrao, 
           dp.id as id_dados, dp.id_pop, dp.quantidade, dp.tempo, dp.uuid as uuid_dados
           FROM $_tabela as p, $_tabelaDados as dp 
           WHERE  p.id = dp.id_pop""";
+    
     final List<Map<String, dynamic>> resultado = await _db!.rawQuery(constulta);
+    */
+    final List<Map<String, dynamic>> resultado = await _db!.query(_tabela);
 
     List<Pop> pops = _toList(resultado);
-
+    print(pops);
     return pops;
   }
 

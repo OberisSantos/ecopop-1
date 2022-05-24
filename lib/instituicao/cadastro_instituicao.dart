@@ -80,11 +80,16 @@ class FormularioInstituicaoState extends State<FormularioInstituicao> {
                         if (instituicaoUp != null) {
                           final String descricao = _controladorDescricao.text;
                           final String sigla = _controladorSigla.text;
-                          final String? uuid = instituicaoUp.uuid==null?null:instituicaoUp.uuid;
+                          final String? uuid = instituicaoUp.uuid == null
+                              ? null
+                              : instituicaoUp.uuid;
                           final int id = instituicaoUp.id;
 
                           final Instituicao upInstituicao = Instituicao(
-                              uuid: uuid, id: id, descricao: descricao, sigla: sigla);
+                              uuid: uuid,
+                              id: id,
+                              descricao: descricao,
+                              sigla: sigla);
                           //update
                           _instituicaoDao
                               .update(upInstituicao)
@@ -93,7 +98,10 @@ class FormularioInstituicaoState extends State<FormularioInstituicao> {
                           final String descricao = _controladorDescricao.text;
                           final String sigla = _controladorSigla.text;
                           final Instituicao newInstituicao = Instituicao(
-                              uuid: null, id:0, descricao: descricao, sigla: sigla);
+                              uuid: null,
+                              id: 0,
+                              descricao: descricao,
+                              sigla: sigla);
                           //Salvar
                           _instituicaoDao
                               .save(newInstituicao)

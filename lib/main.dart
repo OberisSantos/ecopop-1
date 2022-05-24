@@ -12,10 +12,9 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MaterialApp(
-    theme: ThemeData(
-      primarySwatch: Colors.green
-    ),
+    theme: ThemeData(primarySwatch: Colors.green),
     home: const Splash(),
+
     // home: ListarGruposPesquisa()
   ));
 }

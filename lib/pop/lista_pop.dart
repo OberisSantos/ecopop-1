@@ -1,3 +1,4 @@
+import 'package:eco_pop/pop/cadastro_pop.dart';
 import 'package:eco_pop/pop/pop.dart';
 import 'package:eco_pop/pop/pop_dao.dart';
 import 'package:flutter/material.dart';
@@ -51,7 +52,7 @@ class ListarPopState extends State<ListarPop> {
                     child: Card(
                       child: ListTile(
                         title: Text(pop.descricao.toString()),
-                        subtitle: Text(pop.conceito.toString()),
+                        subtitle: Text(pop.padrao.toString()),
                         trailing: Container(
                           width: 100,
                           child: Row(
@@ -100,17 +101,16 @@ class ListarPopState extends State<ListarPop> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          /*Navigator.of(context)
+          Navigator.of(context)
               .push(
                 MaterialPageRoute(
-                  builder: (context) => 'FormularioGrupoPesquisa'(),
+                  builder: (context) => FormularioPop(),
                   settings: RouteSettings(arguments: null),
                 ),
               )
               .then(
                 (value) => setState(() {}),
               );
-              */
         },
         child: Icon(Icons.add),
       ),

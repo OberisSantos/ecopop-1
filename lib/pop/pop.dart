@@ -36,6 +36,6 @@ class DadosPop {
 
   @override
   String toString() {
-    return 'Dados{id: $id, Quantidade: $quantidade, Tempo: $tempo}';
+    return 'Dados{id: $id, Quantidade: $quantidade, Tempo: $tempo, Pop: $idPop}';
   }
 }
